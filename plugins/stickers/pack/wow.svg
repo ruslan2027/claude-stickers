@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<title>a purple face, mouth open in surprise</title>
+<circle cx="50" cy="52" r="46" fill="#FFFFFF"/>
+<circle cx="50" cy="52" r="40.75" fill="#C9A8FF" stroke="#8A5CE0" stroke-width="2.5"/>
+<circle cx="37" cy="44" r="5.75" fill="#FFFFFF" stroke="#2B2140" stroke-width="2.5"/>
+<circle cx="63" cy="44" r="5.75" fill="#FFFFFF" stroke="#2B2140" stroke-width="2.5"/>
+<circle cx="37" cy="44" r="3" fill="#2B2140"/>
+<circle cx="63" cy="44" r="3" fill="#2B2140"/>
+<polyline points="30.07,33.5 31.05,32.65 32.3,31.95 33.75,31.43 35.34,31.11 37,31 38.66,31.11 40.25,31.43 41.7,31.95 42.95,32.65 43.93,33.5" fill="none" stroke="#2B2140" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="56.07,33.5 57.05,32.65 58.3,31.95 59.75,31.43 61.34,31.11 63,31 64.66,31.11 66.25,31.43 67.7,31.95 68.95,32.65 69.93,33.5" fill="none" stroke="#2B2140" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="50" cy="68" rx="7" ry="9" fill="#4A1E3A"/>
+</svg>

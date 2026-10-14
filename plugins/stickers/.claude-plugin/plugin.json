@@ -1,0 +1,23 @@
+{
+  "name": "stickers",
+  "version": "1.0.0",
+  "description": "A sticker palette above the prompt: send stickers with a click, a digit or /sticker, and see the stickers Claude sends back.",
+  "author": { "name": "Ruslan", "url": "https://github.com/ruslan2027" },
+  "license": "MIT",
+  "keywords": ["stickers", "fun", "mod", "palette"],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "packDir": {
+      "type": "string",
+      "title": "Sticker pack folder",
+      "description": "A folder holding stickers.json and one PNG per sticker (an SVG beside it is optional, for the desktop app). Absolute, ~/, or relative to the working directory. Empty uses the built-in pack.",
+      "default": ""
+    },
+    "teachClaude": {
+      "type": "boolean",
+      "title": "Let Claude send stickers",
+      "description": "Tell Claude which stickers exist so it can write :sticker:<name>: in a reply, which is drawn as the sticker.",
+      "default": true
+    }
+  }
+}

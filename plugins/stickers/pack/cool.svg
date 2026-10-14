@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<title>a cyan face in sunglasses, smirking</title>
+<circle cx="50" cy="52" r="46" fill="#FFFFFF"/>
+<circle cx="50" cy="52" r="40.75" fill="#62D8EC" stroke="#1D9CB4" stroke-width="2.5"/>
+<polyline points="22,42 78,42" fill="none" stroke="#2B2140" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="25,41 47,41 45,53 29,54" fill="#2B2140"/>
+<polygon points="53,41 75,41 71,54 55,53" fill="#2B2140"/>
+<polyline points="30,44 36,44" fill="none" stroke="#9BEFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="58,44 64,44" fill="none" stroke="#9BEFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="64.12,65 63.29,65.91 62.32,66.76 61.23,67.52 60.03,68.19 58.73,68.77 57.36,69.24 55.92,69.6 54.43,69.85 52.92,69.98 51.39,69.99 49.87,69.88 48.38,69.66 46.93,69.32 45.54,68.87 44.22,68.31 43,67.66" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

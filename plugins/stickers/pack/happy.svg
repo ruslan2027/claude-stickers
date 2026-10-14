@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<title>a smiling yellow face</title>
+<circle cx="50" cy="52" r="46" fill="#FFFFFF"/>
+<circle cx="50" cy="52" r="40.75" fill="#FFD54A" stroke="#E0A800" stroke-width="2.5"/>
+<ellipse cx="37" cy="44" rx="4" ry="6" fill="#2B2140"/>
+<ellipse cx="63" cy="44" rx="4" ry="6" fill="#2B2140"/>
+<ellipse cx="28" cy="58" rx="6" ry="3.5" fill="#FF7FA0"/>
+<ellipse cx="72" cy="58" rx="6" ry="3.5" fill="#FF7FA0"/>
+<polyline points="65.97,60.45 65.3,61.66 64.47,62.82 63.49,63.91 62.37,64.92 61.12,65.84 59.75,66.65 58.28,67.35 56.73,67.94 55.11,68.4 53.44,68.73 51.73,68.93 50,69 48.27,68.93 46.56,68.73 44.89,68.4 43.27,67.94 41.72,67.35 40.25,66.65 38.88,65.84 37.63,64.92 36.51,63.91 35.53,62.82 34.7,61.66 34.03,60.45" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

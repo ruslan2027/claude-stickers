@@ -1,0 +1,49 @@
+{
+  "stickers": [
+    {
+      "name": "happy",
+      "description": "a smiling yellow face",
+      "emotion": "happy"
+    },
+    {
+      "name": "love",
+      "description": "a pink face with heart eyes",
+      "emotion": "love"
+    },
+    {
+      "name": "lol",
+      "description": "an orange face laughing with eyes squeezed shut",
+      "emotion": "amused"
+    },
+    {
+      "name": "sad",
+      "description": "a blue face with a single tear",
+      "emotion": "sad"
+    },
+    {
+      "name": "wow",
+      "description": "a purple face, mouth open in surprise",
+      "emotion": "surprised"
+    },
+    {
+      "name": "hmm",
+      "description": "a teal face deep in thought, with a question mark",
+      "emotion": "thinking"
+    },
+    {
+      "name": "party",
+      "description": "a green face in a party hat with confetti",
+      "emotion": "celebrating"
+    },
+    {
+      "name": "sleepy",
+      "description": "a lavender face dozing off, with Zs",
+      "emotion": "tired"
+    },
+    {
+      "name": "cool",
+      "description": "a cyan face in sunglasses, smirking",
+      "emotion": "confident"
+    }
+  ]
+}

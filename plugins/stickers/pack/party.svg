@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<title>a green face in a party hat with confetti</title>
+<circle cx="50" cy="56" r="42" fill="#FFFFFF"/>
+<circle cx="50" cy="56" r="36.75" fill="#9BE38A" stroke="#4DAE38" stroke-width="2.5"/>
+<polygon points="50,2 34,26 66,26" fill="#FF6F91" stroke="#2B2140" stroke-width="2" stroke-linejoin="round"/>
+<polyline points="40,18 60,18" fill="none" stroke="#FFD54A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="50" cy="3" r="3.25" fill="#FFD54A" stroke="#2B2140" stroke-width="1.5"/>
+<ellipse cx="38" cy="50" rx="4" ry="6" fill="#2B2140"/>
+<ellipse cx="62" cy="50" rx="4" ry="6" fill="#2B2140"/>
+<polyline points="65.04,66.1 64.4,67.23 63.62,68.3 62.69,69.31 61.64,70.23 60.46,71.08 59.18,71.83 57.8,72.48 56.34,73.02 54.81,73.44 53.24,73.75 51.63,73.94 50,74 48.37,73.94 46.76,73.75 45.19,73.44 43.66,73.02 42.2,72.48 40.82,71.83 39.54,71.08 38.36,70.23 37.31,69.31 36.38,68.3 35.6,67.23 34.96,66.1" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polygon points="10,20 16,18 17,24 11,26" fill="#4FB3FF"/>
+<polygon points="84,12 90,14 88,20 82,18" fill="#FFB347"/>
+<polygon points="88,80 94,82 92,88 86,86" fill="#C39BFF"/>
+<polygon points="8,76 14,74 15,80 9,82" fill="#FF6F91"/>
+</svg>

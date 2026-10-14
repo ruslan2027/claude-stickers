@@ -1,0 +1,5 @@
+# laid by Claude Code when it loads the mod from this folder
+plugins/stickers/.claude-plugin/types/
+plugins/stickers/tsconfig.json
+__pycache__/
+node_modules/

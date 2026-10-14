@@ -1,0 +1,16 @@
+{
+  "name": "claude-stickers",
+  "owner": { "name": "Ruslan", "url": "https://github.com/ruslan2027" },
+  "metadata": {
+    "description": "Stickers for Claude Code: a palette above the prompt, /sticker, and stickers in Claude's replies."
+  },
+  "plugins": [
+    {
+      "name": "stickers",
+      "source": "./plugins/stickers",
+      "description": "A sticker palette above the prompt: send stickers with a click, a digit or /sticker, and see the stickers Claude sends back.",
+      "version": "1.0.0",
+      "category": "fun"
+    }
+  ]
+}

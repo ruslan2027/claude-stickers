@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<title>a teal face deep in thought, with a question mark</title>
+<circle cx="50" cy="52" r="46" fill="#FFFFFF"/>
+<circle cx="50" cy="52" r="40.75" fill="#7FDCCB" stroke="#2FA690" stroke-width="2.5"/>
+<circle cx="37" cy="46" r="5" fill="#FFFFFF" stroke="#2B2140" stroke-width="2"/>
+<circle cx="61" cy="46" r="5" fill="#FFFFFF" stroke="#2B2140" stroke-width="2"/>
+<circle cx="39" cy="43" r="2.8" fill="#2B2140"/>
+<circle cx="63" cy="43" r="2.8" fill="#2B2140"/>
+<polyline points="28,36 42,34" fill="none" stroke="#2B2140" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="40,68 60,64" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="77.11,16.78 77.56,15.25 78.35,13.86 79.44,12.69 80.77,11.79 82.26,11.22 83.85,11 85.44,11.15 86.96,11.66 88.32,12.49 89.46,13.62 90.31,14.97 90.83,16.48 91,18.08 90.8,19.66 90.24,21.16 89.36,22.5 84,30 84,33" fill="none" stroke="#2B2140" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="84" cy="40" r="2.4" fill="#2B2140"/>
+</svg>

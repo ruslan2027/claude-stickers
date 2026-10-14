@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="256" height="256">
+<title>a lavender face dozing off, with Zs</title>
+<circle cx="50" cy="52" r="46" fill="#FFFFFF"/>
+<circle cx="50" cy="52" r="40.75" fill="#BCC2FF" stroke="#6F78E0" stroke-width="2.5"/>
+<polyline points="42.64,47.37 42.11,48.1 41.36,48.74 40.44,49.28 39.38,49.67 38.21,49.92 37,50 35.79,49.92 34.62,49.67 33.56,49.28 32.64,48.74 31.89,48.1 31.36,47.37" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="68.64,47.37 68.11,48.1 67.36,48.74 66.44,49.28 65.38,49.67 64.21,49.92 63,50 61.79,49.92 60.62,49.67 59.56,49.28 58.64,48.74 57.89,48.1 57.36,47.37" fill="none" stroke="#2B2140" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+<ellipse cx="50" cy="66" rx="4" ry="5" fill="#4A2E5A"/>
+<polyline points="72,10 82,10 72,20 82,20" fill="none" stroke="#4A4FB0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<polyline points="86,24 93,24 86,31 93,31" fill="none" stroke="#4A4FB0" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
