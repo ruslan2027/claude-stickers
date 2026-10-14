@@ -1,6 +1,6 @@
 {
   "name": "stickers",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A sticker palette above the prompt: send stickers with a click, a digit or /sticker, and see the stickers Claude sends back.",
   "author": { "name": "Ruslan", "url": "https://github.com/ruslan2027" },
   "license": "MIT",
@@ -12,6 +12,13 @@
       "title": "Sticker pack folder",
       "description": "A folder holding stickers.json and one PNG per sticker (an SVG beside it is optional, for the desktop app). Absolute, ~/, or relative to the working directory. Empty uses the built-in pack.",
       "default": ""
+    },
+    "pictures": {
+      "type": "string",
+      "title": "Sticker pictures in the terminal",
+      "description": "auto shows pictures in kitty and Ghostty and names elsewhere (the pictures… button opens a window with the pictures in any terminal). image always uses the kitty graphics protocol, which other terminals show as [name]; cells draws coarse colored cells that any terminal shows; labels shows names only.",
+      "default": "auto",
+      "options": ["auto", "image", "cells", "labels"]
     },
     "teachClaude": {
       "type": "boolean",

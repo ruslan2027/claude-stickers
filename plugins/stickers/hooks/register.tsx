@@ -1,7 +1,7 @@
 import { atom, read, update } from 'claude-code'
 import type { EngineInterface, Elements, RenderElement, RenderSurface, Register } from 'claude-code'
 
-import type { Pack, Sticker } from '../types'
+import type { Pack, Pictures, Sticker } from '../types'
 import {
   findSticker,
   formatSticker,
@@ -11,12 +11,56 @@ import {
   splitStickers,
   stickerOfMessage,
 } from './pack'
+import { detectHost, openPicker } from './picker'
+import { decodePng, fromBase64, toCells } from './png'
 
 const pack = atom({ plugin: 'stickers', key: 'pack' } as const, null)
 
 /** PNGs past this are left to the text label (an Image takes 2 MiB at most). */
 const MAX_PNG_BASE64 = Math.floor((2 * 1024 * 1024 * 4) / 3)
 const MAX_SVG = 131_072
+/** The first bytes of every PNG file (89 50 4E 47 0D 0A 1A 0A), base64. */
+const PNG_SIGNATURE = 'iVBORw0KGgo'
+
+/** Terminal cells a sticker takes: in the palette, and in the transcript. */
+const SMALL = { columns: 10, rows: 5 }
+const BIG = { columns: 24, rows: 12 }
+
+/**
+ * How the terminal draws stickers. `Image` needs the kitty graphics protocol
+ * (kitty, Ghostty) and shows only its alt text elsewhere, so `auto` takes it
+ * only where the terminal says it is one of those, and never inside tmux,
+ * which drops it. Elsewhere the band shows names, and the picker window shows
+ * the pictures. `cells` draws colored half-block cells, which every terminal
+ * can show, if coarse.
+ */
+async function terminalPictures($: EngineInterface, setting: unknown): Promise<Pictures> {
+  if (setting === 'image' || setting === 'cells' || setting === 'labels') return setting
+  if ((await $.env.get('TMUX')) !== undefined) return 'labels'
+  const term = (await $.env.get('TERM')) ?? ''
+  const program = (await $.env.get('TERM_PROGRAM')) ?? ''
+  const isKitty = (await $.env.get('KITTY_WINDOW_ID')) !== undefined || term.includes('kitty')
+  const isGhostty = term.includes('ghostty') || program.toLowerCase() === 'ghostty'
+  return isKitty || isGhostty ? 'image' : 'labels'
+}
+
+/** The folder as an absolute path, for the picker window, which runs elsewhere. */
+async function absolute($: EngineInterface, dir: string): Promise<string> {
+  try {
+    return (await $.fs.stat(dir, { resolve: true })).realPath ?? dir
+  } catch {
+    return dir
+  }
+}
+
+/** The sticker's PNG as half-block cells at both sizes, for a Raster. */
+function cellsOf(base64: string): Sticker['cells'] {
+  const pic = decodePng(fromBase64(base64))
+  return {
+    small: toCells(pic, SMALL.columns, SMALL.rows),
+    big: toCells(pic, BIG.columns, BIG.rows),
+  }
+}
 
 async function packFolder($: EngineInterface, configured: string): Promise<string> {
   const dir = configured.trim()
@@ -28,12 +72,13 @@ async function packFolder($: EngineInterface, configured: string): Promise<strin
   return dir
 }
 
-async function loadPack($: EngineInterface, dir: string): Promise<Pack> {
+async function loadPack($: EngineInterface, dir: string, pictures: Pictures): Promise<Pack> {
   let manifest: string
   try {
     manifest = (await $.fs.read(joinPath(dir, 'stickers.json'))) as string
   } catch (error) {
-    return { dir, stickers: [], problems: [`cannot read ${joinPath(dir, 'stickers.json')}: ${String(error)}`] }
+    const problem = `cannot read ${joinPath(dir, 'stickers.json')}: ${String(error)}`
+    return { dir, pictures, stickers: [], problems: [problem] }
   }
   const { entries, problems } = parseManifest(manifest)
   const stickers = await Promise.all(
@@ -41,10 +86,22 @@ async function loadPack($: EngineInterface, dir: string): Promise<Pack> {
       const sticker: Sticker = { name: entry.name, description: entry.description, emotion: entry.emotion }
       try {
         const { base64 } = (await $.fs.read(joinPath(dir, entry.file), { as: 'bytes' })) as { base64: string }
-        if (base64.length <= MAX_PNG_BASE64) sticker.png = base64
-        else problems.push(`${entry.file} is over 2 MiB; "${entry.name}" shows as text`)
+        // An Image whose bytes are no PNG gets the whole tree refused, so check here.
+        if (!base64.startsWith(PNG_SIGNATURE)) problems.push(`${entry.file} is not a PNG; "${entry.name}" shows as text`)
+        else if (base64.length > MAX_PNG_BASE64) problems.push(`${entry.file} is over 2 MiB; "${entry.name}" shows as text`)
+        else {
+          sticker.png = base64
+          sticker.file = joinPath(dir, entry.file)
+        }
       } catch {
         problems.push(`cannot read ${entry.file}; "${entry.name}" shows as text`)
+      }
+      if (pictures === 'cells' && sticker.png !== undefined) {
+        try {
+          sticker.cells = cellsOf(sticker.png)
+        } catch (error) {
+          problems.push(`cannot decode ${entry.file} (${String(error)}); "${entry.name}" shows as text`)
+        }
       }
       try {
         const svg = (await $.fs.read(joinPath(dir, entry.svg))) as string
@@ -55,32 +112,31 @@ async function loadPack($: EngineInterface, dir: string): Promise<Pack> {
       return sticker
     }),
   )
-  return { dir, stickers, problems }
+  return { dir, pictures, stickers, problems }
 }
 
 /**
  * The sticker's picture on this surface, or null where only a label can show:
- * an Image on the terminal, an Svg everywhere else (Image draws only there).
+ * on the terminal a Raster of cells or an Image (see terminalPictures), an Svg
+ * everywhere else (Image and Raster draw only on the terminal).
  */
 function picture(
   table: Elements[RenderSurface],
   surface: RenderSurface,
+  pictures: Pictures,
   sticker: Sticker,
   big: boolean,
   key: string,
 ): RenderElement | null {
   if (surface === 'terminal') {
-    if (sticker.png === undefined) return null
-    const { Image } = table as Elements['terminal']
-    return (
-      <Image
-        key={key}
-        source={{ png: sticker.png }}
-        columns={big ? 16 : 6}
-        rows={big ? 8 : 3}
-        alt={`[${sticker.name}]`}
-      />
-    )
+    const { Image, Raster } = table as Elements['terminal']
+    const size = big ? BIG : SMALL
+    if (pictures === 'cells') {
+      if (sticker.cells === undefined) return null
+      return <Raster key={key} {...size} cells={big ? sticker.cells.big : sticker.cells.small} />
+    }
+    if (pictures === 'labels' || sticker.png === undefined) return null
+    return <Image key={key} source={{ png: sticker.png }} {...size} alt={`[${sticker.name}]`} />
   }
   if (sticker.svg === undefined) return null
   const { Svg } = table as Elements['desktop']
@@ -96,6 +152,23 @@ async function send($: EngineInterface, sticker: Sticker): Promise<void> {
   }
 }
 
+/** One picker window at a time: a second press while it is open does nothing. */
+let isPickerOpen = false
+
+/** Opens the picker window; resolves the sticker clicked, if any. */
+async function pick($: EngineInterface): Promise<Sticker | undefined> {
+  if (isPickerOpen) return undefined
+  isPickerOpen = true
+  try {
+    const stickers = (await read($, pack))?.stickers ?? []
+    const picked = await openPicker($, await detectHost($), stickers)
+    if (picked.error !== undefined) $.ui.toast(`stickers: ${picked.error}`)
+    return picked.sticker
+  } finally {
+    isPickerOpen = false
+  }
+}
+
 export const register: Register = (on, options) => {
   const configuredDir = typeof options.packDir === 'string' ? options.packDir : ''
   const teachClaude = options.teachClaude !== false
@@ -103,11 +176,12 @@ export const register: Register = (on, options) => {
   on('session.start', async ($, e, next) => {
     await $.command.register({
       name: 'sticker',
-      description: 'Put a sticker in the prompt (no name: list the stickers)',
-      argumentHint: '[name]',
+      description: 'Pick a sticker for the prompt (a name puts it there; list lists them)',
+      argumentHint: '[name|list]',
       immediate: true,
     })
-    const loaded = await loadPack($, await packFolder($, configuredDir))
+    const pictures = await terminalPictures($, options.pictures)
+    const loaded = await loadPack($, await absolute($, await packFolder($, configuredDir)), pictures)
     await update($, pack, () => loaded)
     if (loaded.problems.length > 0) {
       const more = loaded.problems.length > 1 ? ` (+${loaded.problems.length - 1} more)` : ''
@@ -123,14 +197,16 @@ export const register: Register = (on, options) => {
     }
 
     const query = e.args.trim()
-    if (query === '') {
+    if (query.toLowerCase() === 'list') {
       const list = stickers.map((s, i) => `${i < 9 ? i + 1 : ' '}  ${s.name.padEnd(10)} ${s.description}`)
       return { text: ['Stickers (/sticker <name>, or a digit in the empty prompt):', ...list].join('\n') }
     }
 
-    const sticker = findSticker(stickers, query)
+    const sticker = query === '' ? await pick($) : findSticker(stickers, query)
     if (sticker === undefined) {
-      return { text: `No sticker "${query}". Stickers: ${stickers.map(s => s.name).join(', ')}` }
+      return query === ''
+        ? { text: 'No sticker picked.' }
+        : { text: `No sticker "${query}". Stickers: ${stickers.map(s => s.name).join(', ')}` }
     }
     const filled = await $.prompt.fill({ text: formatSticker(sticker), mode: 'replace' })
     return {
@@ -150,12 +226,13 @@ export const register: Register = (on, options) => {
   })
 
   on('ui.render', { component: 'AbovePrompt' }, async ($, e, next) => {
-    const stickers = (await read($, pack))?.stickers ?? []
-    if (e.props.hasSurvey || stickers.length === 0) return next(e)
+    const loaded = await read($, pack)
+    const stickers = loaded?.stickers ?? []
+    if (e.props.hasSurvey || loaded === null || stickers.length === 0) return next(e)
 
     const table = $.ui.resolve(e)
     const { Box, Button } = table
-    const withPictures = e.props.maxRows >= 5
+    const withPictures = e.props.maxRows >= SMALL.rows + 1
 
     return (
       <Box key="palette" flexDirection="row" flexWrap="wrap" columnGap={1}>
@@ -168,7 +245,7 @@ export const register: Register = (on, options) => {
               onPress={() => send($, sticker)}
             />
           )
-          const art = withPictures ? picture(table, e.surface, sticker, false, `art-${sticker.name}`) : null
+          const art = withPictures ? picture(table, e.surface, loaded.pictures, sticker, false, `art-${sticker.name}`) : null
           return art === null ? (
             button
           ) : (
@@ -178,15 +255,27 @@ export const register: Register = (on, options) => {
             </Box>
           )
         })}
+        {e.surface === 'terminal' && (
+          <Button
+            key="open-picker"
+            label="pictures…"
+            hotkey="0"
+            variant="primary"
+            onPress={async () => {
+              const sticker = await pick($)
+              if (sticker !== undefined) await send($, sticker)
+            }}
+          />
+        )}
       </Box>
     )
   })
 
   on('ui.render', { component: 'AssistantMessage' }, async ($, e, next) => {
     if (!e.props.text.includes(':sticker:')) return next(e)
-    const stickers = (await read($, pack))?.stickers ?? []
-    const segments = splitStickers(e.props.text, stickers)
-    if (!segments.some(s => s.kind === 'sticker')) return next(e)
+    const loaded = await read($, pack)
+    const segments = splitStickers(e.props.text, loaded?.stickers ?? [])
+    if (loaded === null || !segments.some(s => s.kind === 'sticker')) return next(e)
 
     const table = $.ui.resolve(e)
     const { Box, Markdown, Text } = table
@@ -196,7 +285,7 @@ export const register: Register = (on, options) => {
           segment.kind === 'text' ? (
             <Markdown key={`md-${i}`} text={segment.text} />
           ) : (
-            picture(table, e.surface, segment.sticker, true, `sticker-${i}`) ?? (
+            picture(table, e.surface, loaded.pictures, segment.sticker, true, `sticker-${i}`) ?? (
               <Text key={`label-${i}`} bold>
                 [sticker: {segment.sticker.description}]
               </Text>
@@ -209,8 +298,12 @@ export const register: Register = (on, options) => {
 
   on('ui.render', { component: 'UserMessage' }, async ($, e, next) => {
     if (e.props.isExpanded || !e.props.text.startsWith('[sticker: ')) return next(e)
-    const sticker = stickerOfMessage(e.props.text, (await read($, pack))?.stickers ?? [])
-    const art = sticker === undefined ? null : picture($.ui.resolve(e), e.surface, sticker, true, 'sent')
+    const loaded = await read($, pack)
+    const sticker = loaded === null ? undefined : stickerOfMessage(e.props.text, loaded.stickers)
+    const art =
+      loaded === null || sticker === undefined
+        ? null
+        : picture($.ui.resolve(e), e.surface, loaded.pictures, sticker, true, 'sent')
     return art ?? next(e)
   })
 }
